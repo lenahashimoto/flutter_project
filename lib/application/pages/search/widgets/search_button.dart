@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../search_vm.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -17,7 +17,7 @@ class SearchButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FilledButton.icon(
       onPressed: _vm.canTapSearch ? () => _vm.onSearchTapped(context) : null,
-      label: Text(AppLocalizations.of(context).button_search),
+      label: Text(AppLocalizations.of(context)!.button_search),
       icon: SvgPicture.asset(Assets.images.search,
           height: 24,
           colorFilter: ColorFilter.mode(

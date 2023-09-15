@@ -1,3 +1,5 @@
+import 'package:flutter_project/model/repo.dart';
+
 abstract interface class SearchList {
-  Future<List<String>> searchList(String keyword);
+  Future<List<Repo>> searchList(String keyword);
 }

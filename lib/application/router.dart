@@ -1,8 +1,10 @@
-import 'package:github_browser/application/pages/result_list/result_list_page.dart';
-import 'package:github_browser/application/pages/search/search_page.dart';
+import 'package:flutter_project/application/pages/result_list/result_list_page.dart';
+import 'package:flutter_project/application/pages/search/search_page.dart';
+import 'package:flutter_project/application/pages/sample/sample_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
+// GoRouter configuration
 final router = GoRouter(
   initialLocation: SearchPage.path,
   routes: [
@@ -16,6 +18,11 @@ final router = GoRouter(
         pageBuilder: (BuildContext context, GoRouterState state) {
           final keyword = state.pathParameters[ResultListPage.kParamKeyword]!;
           return MaterialPage(child: ResultListPage(keyword));
+        }),
+    GoRoute(
+        path: SamplePage.path,
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          return const MaterialPage(child: SamplePage());
         }),
   ],
 );

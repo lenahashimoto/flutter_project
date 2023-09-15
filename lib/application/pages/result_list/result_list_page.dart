@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:get_it/get_it.dart';
+import 'package:flutter_project/application/widgets/templates/not_login_template.dart';
+import 'package:flutter_project/model/repo.dart';
 
 import 'result_list_vm.dart';
-import 'impl/result_list_vm_impl.dart';
+
 
 class ResultListPage extends ConsumerStatefulWidget {
-  static const path = '/result_list_page';
-  const ResultListPage({super.key});
+  static const kParamKeyword = 'keyword';
+  static const path = '/result_list/:$kParamKeyword';
+  const ResultListPage(this.keyword, {super.key});
+
+  final String keyword;
 
   @override
   ConsumerState<ResultListPage> createState() => _ResultListPageState();
 }
 
 class _ResultListPageState extends ConsumerState<ResultListPage> {
-  final _vm = ResultListVmImpl();
+  final _vm = GetIt.I<ResultListVm>();
 
   @override
   void initState() {
@@ -23,7 +29,58 @@ class _ResultListPageState extends ConsumerState<ResultListPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Container();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _vm.onKeywordChanged(widget.keyword);
+    });
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return NotLoginTemplate(
+      appTitle:
+      '${AppLocalizations.of(context)?.result_list_page_title}  [${_vm.keyword}]',
+      child: FutureBuilder(
+          future: _vm.searchResult(widget.keyword),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text(snapshot.error!.toString());
+            } else if (!snapshot.hasData) {
+              return const CircularProgressIndicator();
+            }
+            final items = snapshot.data!;
+
+            return ListView.builder(
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  return _buildCard(items[index]);
+                });
+          }),
+    );
+  }
+
+  Widget _buildCard(Repo repository) {
+    return Card(
+      child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Text(
+                  repository.name,
+                ),
+              ),
+              repository.shortDescription != null ? Padding(
+                padding: const EdgeInsets.fromLTRB(12.0, 0.0, 12.0, 12.0),
+                child: Text(
+                    repository.shortDescription,
+                ),
+              ) : Container(),
+            ],
+          )
+        );
+    }
 }
+
